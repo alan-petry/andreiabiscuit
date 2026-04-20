@@ -7,17 +7,44 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.3
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          port: ${{ secrets.VPS_PORT }}
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Build frontend
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
+
+      - name: Deploy backend via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /opt/andreiabiscuit
+            cd /root/apnet/andreiabiscuit
             git pull origin main
-            docker compose build --no-cache
-            docker compose up -d
-            docker compose exec -T backend node dist/db/migrate.js || true
+            npm install --prefix /root/apnet/andreiabiscuit/backend
+            npm run build --prefix /root/apnet/andreiabiscuit/backend
+            node /root/apnet/andreiabiscuit/backend/dist/db/migrate.js
+            pm2 restart andreiabiscuit --update-env || pm2 start /root/apnet/andreiabiscuit/backend/dist/index.js --name andreiabiscuit
+
+      - name: Upload frontend build
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "frontend/dist/*"
+          target: "/root/apnet/andreiabiscuit/frontend"
+          strip_components: 2
