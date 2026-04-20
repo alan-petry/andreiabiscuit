@@ -7,6 +7,7 @@ import ClientesPage from './pages/ClientesPage';
 import ProdutosPage from './pages/ProdutosPage';
 import PedidosPage from './pages/PedidosPage';
 import PedidoFormPage from './pages/PedidoFormPage';
+import UsuariosPage from './pages/UsuariosPage';
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
           <Route path="/pedidos" element={<PrivateRoute><PedidosPage /></PrivateRoute>} />
           <Route path="/pedidos/novo" element={<PrivateRoute><PedidoFormPage /></PrivateRoute>} />
           <Route path="/pedidos/:id" element={<PrivateRoute><PedidoFormPage /></PrivateRoute>} />
+          <Route path="/usuarios" element={<PrivateRoute><UsuariosPage /></PrivateRoute>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>

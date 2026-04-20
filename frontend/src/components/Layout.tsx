@@ -6,6 +6,7 @@ const navItems = [
   { path: '/pedidos', label: 'Pedidos', icon: '📦' },
   { path: '/clientes', label: 'Clientes', icon: '👥' },
   { path: '/produtos', label: 'Produtos', icon: '🎀' },
+  { path: '/usuarios', label: 'Usuários', icon: '⚙️' },
 ];
 
 export default function Layout({ children }: { children: React.ReactNode }) {

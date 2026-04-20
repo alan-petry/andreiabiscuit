@@ -6,6 +6,7 @@ import clientesRoutes from './routes/clientes';
 import produtosRoutes from './routes/produtos';
 import pedidosRoutes from './routes/pedidos';
 import pagamentosRoutes from './routes/pagamentos';
+import usuariosRoutes from './routes/usuarios';
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.use('/api/clientes', clientesRoutes);
 app.use('/api/produtos', produtosRoutes);
 app.use('/api/pedidos', pedidosRoutes);
 app.use('/api/pedidos/:pedidoId/pagamentos', pagamentosRoutes);
+app.use('/api/usuarios', usuariosRoutes);
 
 app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error(err);
