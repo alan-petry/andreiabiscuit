@@ -10,7 +10,8 @@ router.get('/', async (req: AuthRequest, res: Response) => {
 
   let sql = `
     SELECT p.*, c.nome AS cliente_nome,
-      COALESCE(SUM(pg.valor), 0) AS total_pago
+      COALESCE(SUM(DISTINCT pg.valor), 0) AS total_pago,
+      (SELECT JSON_ARRAYAGG(i.status) FROM itens_pedido i WHERE i.pedido_id = p.id) AS item_statuses
     FROM pedidos p
     JOIN clientes c ON c.id = p.cliente_id
     LEFT JOIN pagamentos pg ON pg.pedido_id = p.id

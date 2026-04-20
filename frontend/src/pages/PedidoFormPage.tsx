@@ -111,7 +111,14 @@ export default function PedidoFormPage() {
   }
 
   function setItem(idx: number, field: keyof Item, value: any) {
-    setItens((prev) => prev.map((it, i) => i === idx ? { ...it, [field]: value } : it));
+    setItens((prev) => prev.map((it, i) => {
+      if (i !== idx) return it;
+      const atualizado = { ...it, [field]: value };
+      if (field === 'data_entrega') {
+        atualizado.status = value ? 'entregue' : (it.status === 'entregue' ? 'em_producao' : it.status);
+      }
+      return atualizado;
+    }));
   }
 
   function addItem() { setItens((prev) => [...prev, novoItem()]); }
@@ -121,8 +128,9 @@ export default function PedidoFormPage() {
     setPagamentos((prev) => prev.map((p, i) => i === idx ? { ...p, [field]: value } : p));
   }
 
+  const valorTotal = itens.reduce((s, it) => s + (Number(it.valor) || 0), 0);
   const totalPago = pagamentos.reduce((s, p) => s + (Number(p.valor) || 0), 0);
-  const saldo = (Number(form.valor_total) || 0) - totalPago;
+  const saldo = valorTotal - totalPago;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -130,7 +138,7 @@ export default function PedidoFormPage() {
     try {
       const payload = {
         ...form,
-        valor_total: Number(form.valor_total) || 0,
+        valor_total: valorTotal,
         itens: itens.map((it) => ({
           ...it,
           produto_id: it.produto_id ? Number(it.produto_id) : null,
@@ -208,8 +216,11 @@ export default function PedidoFormPage() {
                 <input className="input" type="date" value={form.data_pedido} onChange={(e) => setFormField('data_pedido', e.target.value)} required />
               </div>
               <div>
-                <label className="label">Valor total (R$) *</label>
-                <input className="input" type="number" step="0.01" min="0" value={form.valor_total} onChange={(e) => setFormField('valor_total', e.target.value)} placeholder="0,00" required />
+                <label className="label">Valor total (R$)</label>
+                <div className="input bg-gray-50 text-gray-700 font-semibold">
+                  R$ {valorTotal.toFixed(2)}
+                  <span className="text-xs font-normal text-gray-400 ml-2">calculado automaticamente</span>
+                </div>
               </div>
               <div>
                 <label className="label">Forma de pagamento</label>
@@ -293,7 +304,7 @@ export default function PedidoFormPage() {
             <div className="card">
               <div className="flex justify-between text-sm mb-3">
                 <span className="text-gray-600">Total do pedido:</span>
-                <strong>R$ {Number(form.valor_total || 0).toFixed(2)}</strong>
+                <strong>R$ {valorTotal.toFixed(2)}</strong>
               </div>
               <div className="flex justify-between text-sm mb-3">
                 <span className="text-gray-600">Total pago:</span>

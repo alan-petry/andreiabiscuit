@@ -11,14 +11,14 @@ const STATUS_LABELS: Record<string, { label: string; cor: string }> = {
   cancelado: { label: 'Cancelado', cor: 'bg-red-100 text-red-700' },
 };
 
-function derivarStatus(itens: any[]) {
-  if (!itens?.length) return 'pendente';
-  const s = itens.map((i: any) => i.status);
-  if (s.every((x: string) => x === 'entregue')) return 'entregue';
-  if (s.every((x: string) => x === 'cancelado')) return 'cancelado';
-  if (s.some((x: string) => x === 'entregue')) return 'parcialmente_entregue';
-  if (s.some((x: string) => x === 'pronto')) return 'pronto';
-  if (s.some((x: string) => x === 'em_producao')) return 'em_producao';
+function derivarStatus(statuses: string[]) {
+  if (!statuses?.length) return 'pendente';
+  const s = statuses;
+  if (s.every((x) => x === 'entregue')) return 'entregue';
+  if (s.every((x) => x === 'cancelado')) return 'cancelado';
+  if (s.some((x) => x === 'entregue')) return 'parcialmente_entregue';
+  if (s.some((x) => x === 'pronto')) return 'pronto';
+  if (s.some((x) => x === 'em_producao')) return 'em_producao';
   return 'pendente';
 }
 
@@ -34,12 +34,12 @@ export default function DashboardPage() {
   }, []);
 
   const ativos = pedidos.filter((p) => {
-    const s = derivarStatus(p.itens);
+    const s = derivarStatus(p.item_statuses || []);
     return s !== 'entregue' && s !== 'cancelado';
   });
 
   const contagem = pedidos.reduce<Record<string, number>>((acc, p) => {
-    const s = derivarStatus(p.itens);
+    const s = derivarStatus(p.item_statuses || []);
     acc[s] = (acc[s] || 0) + 1;
     return acc;
   }, {});
@@ -76,8 +76,8 @@ export default function DashboardPage() {
                   {new Date(p.data_pedido).toLocaleDateString('pt-BR')} · R$ {Number(p.valor_total).toFixed(2)}
                 </p>
               </div>
-              <span className={`px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap ${STATUS_LABELS[derivarStatus(p.itens)]?.cor}`}>
-                {STATUS_LABELS[derivarStatus(p.itens)]?.label}
+              <span className={`px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap ${STATUS_LABELS[derivarStatus(p.item_statuses || [])]?.cor}`}>
+                {STATUS_LABELS[derivarStatus(p.item_statuses || [])]?.label}
               </span>
             </Link>
           ))}
