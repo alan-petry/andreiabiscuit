@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 jobs:
-  deploy:
+  deploy-frontend:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,23 +23,7 @@ jobs:
         working-directory: frontend
         run: |
           npm ci
-          VITE_API_URL=http://85.31.224.202:3002/api npm run build
-
-      - name: Deploy backend via SSH
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd /root/apnet/andreiabiscuit
-            git pull origin main
-            npm install --prefix /root/apnet/andreiabiscuit/backend
-            npm run build --prefix /root/apnet/andreiabiscuit/backend
-            cd /root/apnet/andreiabiscuit/backend && node dist/db/migrate.js && cd ..
-            pm2 restart andreiabiscuit --update-env || pm2 start /root/apnet/andreiabiscuit/backend/dist/index.js --name andreiabiscuit --cwd /root/apnet/andreiabiscuit/backend
-            pm2 serve /root/apnet/andreiabiscuit/frontend 3124 --name frontend_andreia --spa || pm2 restart frontend_andreia
-            pm2 save
+          VITE_API_URL=https://api.andreiabiscuit.apnet.tech/api npm run build
 
       - name: Upload frontend build
         uses: appleboy/scp-action@v0.1.7
