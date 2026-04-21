@@ -69,6 +69,29 @@ const migrations = [
     ordem TINYINT NOT NULL DEFAULT 0,
     FOREIGN KEY (item_pedido_id) REFERENCES itens_pedido(id) ON DELETE CASCADE
   )`,
+
+  `CREATE TABLE IF NOT EXISTS categorias (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )`,
+
+  `ALTER TABLE produtos
+    ADD COLUMN IF NOT EXISTS categoria_id INT AFTER nome,
+    ADD COLUMN IF NOT EXISTS dimensoes VARCHAR(255) AFTER descricao,
+    ADD COLUMN IF NOT EXISTS catalogo_online TINYINT(1) NOT NULL DEFAULT 0 AFTER dimensoes`,
+
+  `ALTER TABLE produtos
+    ADD CONSTRAINT IF NOT EXISTS fk_produto_categoria
+    FOREIGN KEY (categoria_id) REFERENCES categorias(id) ON DELETE SET NULL`,
+
+  `CREATE TABLE IF NOT EXISTS produto_imagens (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    produto_id INT NOT NULL,
+    imagem_base64 MEDIUMTEXT NOT NULL,
+    ordem TINYINT NOT NULL DEFAULT 0,
+    FOREIGN KEY (produto_id) REFERENCES produtos(id) ON DELETE CASCADE
+  )`,
 ];
 
 async function migrate() {
