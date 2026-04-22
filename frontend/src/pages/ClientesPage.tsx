@@ -4,7 +4,7 @@ import api from '../services/api';
 
 function ClienteForm({ id }: { id?: string }) {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ nome: '', telefone: '', email: '', observacao: '' });
+  const [form, setForm] = useState({ nome: '', telefone: '', endereco: '', email: '', observacao: '' });
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -47,6 +47,10 @@ function ClienteForm({ id }: { id?: string }) {
         <div>
           <label className="label">Telefone</label>
           <input className="input" type="tel" value={form.telefone} onChange={(e) => set('telefone', e.target.value)} placeholder="(00) 00000-0000" />
+        </div>
+        <div>
+          <label className="label">Endereço</label>
+          <input className="input" value={form.endereco} onChange={(e) => set('endereco', e.target.value)} placeholder="Rua, número, bairro, cidade..." />
         </div>
         <div>
           <label className="label">Email</label>

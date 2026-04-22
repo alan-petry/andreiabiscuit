@@ -92,6 +92,8 @@ const migrations = [
 
   `ALTER TABLE itens_pedido ADD COLUMN quantidade INT NOT NULL DEFAULT 1 AFTER produto_id`,
   `ALTER TABLE itens_pedido ADD COLUMN valor_unitario DECIMAL(10,2) NOT NULL DEFAULT 0 AFTER quantidade`,
+
+  `ALTER TABLE clientes ADD COLUMN endereco TEXT AFTER telefone`,
 ];
 
 async function migrate() {
