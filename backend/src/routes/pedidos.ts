@@ -91,11 +91,13 @@ router.post('/', async (req: AuthRequest, res: Response) => {
     for (const item of (itens || [])) {
       const [itemResult] = await conn.execute<any>(
         `INSERT INTO itens_pedido
-          (pedido_id, produto_id, descricao_personalizacao, observacao, valor, status, previsao_entrega, data_entrega)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+          (pedido_id, produto_id, quantidade, valor_unitario, descricao_personalizacao, observacao, valor, status, previsao_entrega, data_entrega)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           pedidoId,
           item.produto_id || null,
+          item.quantidade || 1,
+          item.valor_unitario || 0,
           item.descricao_personalizacao || null,
           item.observacao || null,
           item.valor || 0,
@@ -148,19 +150,21 @@ router.put('/:id', async (req: AuthRequest, res: Response) => {
         let itemId = item.id;
         if (itemId) {
           await conn.execute(
-            `UPDATE itens_pedido SET produto_id=?, descricao_personalizacao=?, observacao=?, valor=?,
-              status=?, previsao_entrega=?, data_entrega=? WHERE id=?`,
+            `UPDATE itens_pedido SET produto_id=?, quantidade=?, valor_unitario=?, descricao_personalizacao=?,
+              observacao=?, valor=?, status=?, previsao_entrega=?, data_entrega=? WHERE id=?`,
             [
-              item.produto_id || null, item.descricao_personalizacao || null, item.observacao || null,
+              item.produto_id || null, item.quantidade || 1, item.valor_unitario || 0,
+              item.descricao_personalizacao || null, item.observacao || null,
               item.valor || 0, item.status || 'pendente', item.previsao_entrega || null,
               item.data_entrega || null, itemId,
             ],
           );
         } else {
           const [r] = await conn.execute<any>(
-            `INSERT INTO itens_pedido (pedido_id, produto_id, descricao_personalizacao, observacao, valor, status, previsao_entrega, data_entrega)
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-            [pedidoId, item.produto_id || null, item.descricao_personalizacao || null, item.observacao || null,
+            `INSERT INTO itens_pedido (pedido_id, produto_id, quantidade, valor_unitario, descricao_personalizacao, observacao, valor, status, previsao_entrega, data_entrega)
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [pedidoId, item.produto_id || null, item.quantidade || 1, item.valor_unitario || 0,
+              item.descricao_personalizacao || null, item.observacao || null,
               item.valor || 0, item.status || 'pendente', item.previsao_entrega || null, item.data_entrega || null],
           );
           itemId = r.insertId;

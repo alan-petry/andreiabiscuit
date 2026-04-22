@@ -89,6 +89,9 @@ const migrations = [
     ordem TINYINT NOT NULL DEFAULT 0,
     FOREIGN KEY (produto_id) REFERENCES produtos(id) ON DELETE CASCADE
   )`,
+
+  `ALTER TABLE itens_pedido ADD COLUMN quantidade INT NOT NULL DEFAULT 1 AFTER produto_id`,
+  `ALTER TABLE itens_pedido ADD COLUMN valor_unitario DECIMAL(10,2) NOT NULL DEFAULT 0 AFTER quantidade`,
 ];
 
 async function migrate() {
