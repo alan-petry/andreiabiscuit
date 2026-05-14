@@ -112,8 +112,8 @@ function ProdutoForm({ id }: { id?: string }) {
         </div>
 
         <div>
-          <label className="label">Fotos do produto (máx. 3)</label>
-          <ImageUpload imagens={imagens} onChange={setImagens} />
+          <label className="label">Fotos do produto (máx. 10)</label>
+          <ImageUpload imagens={imagens} onChange={setImagens} maxImagens={10} />
         </div>
 
         <div className="flex gap-2 pt-2">

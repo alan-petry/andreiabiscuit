@@ -97,7 +97,7 @@ router.delete('/:id', async (req: AuthRequest, res: Response) => {
 
 async function salvarImagens(conn: any, produtoId: number, imagens: any[]) {
   if (!Array.isArray(imagens)) return;
-  const lista = imagens.slice(0, 3);
+  const lista = imagens.slice(0, 10);
   for (let i = 0; i < lista.length; i++) {
     await conn.execute(
       'INSERT INTO produto_imagens (produto_id, imagem_base64, ordem) VALUES (?, ?, ?)',
