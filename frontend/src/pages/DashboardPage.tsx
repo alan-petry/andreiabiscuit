@@ -68,19 +68,26 @@ export default function DashboardPage() {
         <div className="card text-center text-gray-400 py-8">Nenhum pedido em aberto 🎉</div>
       ) : (
         <div className="space-y-2">
-          {ativos.map((p) => (
-            <Link key={p.id} to={`/pedidos/${p.id}`} className="card flex items-center gap-3 hover:border-rose-300 transition-colors">
-              <div className="flex-1 min-w-0">
-                <p className="font-medium truncate">{p.cliente_nome}</p>
-                <p className="text-sm text-gray-500">
-                  {new Date(p.data_pedido).toLocaleDateString('pt-BR')} · R$ {Number(p.valor_total).toFixed(2)}
-                </p>
-              </div>
-              <span className={`px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap ${STATUS_LABELS[derivarStatus(p.item_statuses || [])]?.cor}`}>
-                {STATUS_LABELS[derivarStatus(p.item_statuses || [])]?.label}
-              </span>
-            </Link>
-          ))}
+          {ativos.map((p) => {
+            const status = derivarStatus(p.item_statuses || []);
+            const { label, cor } = STATUS_LABELS[status] || STATUS_LABELS.pendente;
+            const saldo = Number(p.valor_total) - Number(p.total_pago || 0);
+            return (
+              <Link key={p.id} to={`/pedidos/${p.id}`} className="card flex items-start gap-3 hover:border-rose-300 transition-colors">
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium truncate">{p.cliente_nome}</p>
+                  <p className="text-sm text-gray-500">
+                    {new Date(p.data_pedido).toLocaleDateString('pt-BR')}
+                  </p>
+                  <div className="flex gap-3 mt-1 text-xs text-gray-500">
+                    <span>Total: <strong className="text-gray-800">R$ {Number(p.valor_total).toFixed(2)}</strong></span>
+                    {saldo > 0 && <span className="text-orange-600">Saldo: R$ {saldo.toFixed(2)}</span>}
+                  </div>
+                </div>
+                <span className={`px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap mt-1 ${cor}`}>{label}</span>
+              </Link>
+            );
+          })}
         </div>
       )}
     </div>
