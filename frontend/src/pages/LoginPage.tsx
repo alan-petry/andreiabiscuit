@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { version as APP_VERSION } from '../../package.json';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -31,6 +32,7 @@ export default function LoginPage() {
           <div className="text-5xl mb-3">🌸</div>
           <h1 className="text-2xl font-bold text-rose-700">Andreia Biscuit</h1>
           <p className="text-gray-500 text-sm mt-1">Gerenciador de pedidos</p>
+          <p className="text-gray-400 text-xs mt-2">v{APP_VERSION}</p>
         </div>
 
         <div className="card">
