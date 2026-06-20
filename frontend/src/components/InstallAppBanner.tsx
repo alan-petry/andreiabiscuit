@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Capacitor } from '@capacitor/core';
 
-const APK_URL = 'https://api.andreiabiscuit.apnet.tech/download/app.apk';
+const APK_URL = 'https://andreiabiscuit.apnet.tech/app.apk';
 const DISMISSED_KEY = 'install-banner-dismissed';
 
 function isAndroidChrome() {
@@ -41,6 +41,7 @@ export default function InstallAppBanner() {
         </div>
         <a
           href={APK_URL}
+          download="andreiabiscuit.apk"
           className="flex-shrink-0 rounded-xl bg-rose-500 px-4 py-2 text-sm font-semibold text-white active:bg-rose-600"
         >
           Instalar

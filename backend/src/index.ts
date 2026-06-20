@@ -22,13 +22,6 @@ app.use('/updates', express.static(updatesPath, { setHeaders: (res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
 } }));
 
-const apkPath = process.env.APK_PATH || path.join(__dirname, '../../../frontend/app.apk');
-app.get('/download/app.apk', (_req, res) => {
-  res.setHeader('Content-Type', 'application/vnd.android.package-archive');
-  res.setHeader('Content-Disposition', 'attachment; filename="andreiabiscuit.apk"');
-  res.sendFile(apkPath);
-});
-
 app.use('/api/auth', authRoutes);
 app.use('/api/clientes', clientesRoutes);
 app.use('/api/produtos', produtosRoutes);
