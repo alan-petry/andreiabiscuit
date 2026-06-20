@@ -10,10 +10,22 @@ import PedidoFormPage from './pages/PedidoFormPage';
 import UsuariosPage from './pages/UsuariosPage';
 import CategoriasPage from './pages/CategoriasPage';
 import CatalogoPage from './pages/CatalogoPage';
+import { useOtaUpdate } from './hooks/useOtaUpdate';
+import InstallAppBanner from './components/InstallAppBanner';
 
-export default function App() {
+function AppContent() {
+  const { updating } = useOtaUpdate();
+
   return (
-    <AuthProvider>
+    <>
+      {updating && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+          <div className="rounded-2xl bg-white px-8 py-5 text-center shadow-xl">
+            <p className="text-lg font-semibold text-gray-800">Atualizando...</p>
+          </div>
+        </div>
+      )}
+      <InstallAppBanner />
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
@@ -31,6 +43,14 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
     </AuthProvider>
   );
 }

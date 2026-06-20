@@ -34,3 +34,28 @@ jobs:
           source: "frontend/dist/*"
           target: "/root/apnet/andreiabiscuit/frontend"
           strip_components: 2
+
+      - name: Gerar bundle OTA
+        run: |
+          BUNDLE_ID=$(echo $GITHUB_SHA | cut -c1-8)
+          cd frontend/dist && zip -r ../../bundle-${BUNDLE_ID}.zip .
+
+      - name: Upload bundle OTA para VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "bundle-*.zip"
+          target: "/root/apnet/andreiabiscuit/updates/bundles"
+
+      - name: Atualizar latest.json no VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            BUNDLE_ID=$(echo ${{ github.sha }} | cut -c1-8)
+            BUNDLE_URL="https://api.andreiabiscuit.apnet.tech/updates/bundles/bundle-${BUNDLE_ID}.zip"
+            echo "{\"bundleId\":\"${BUNDLE_ID}\",\"url\":\"${BUNDLE_URL}\"}" > /root/apnet/andreiabiscuit/updates/latest.json
