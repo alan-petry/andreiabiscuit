@@ -35,6 +35,32 @@ jobs:
           target: "/root/apnet/andreiabiscuit/frontend"
           strip_components: 2
 
+      - name: Upload server.cjs para VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "frontend/server.cjs"
+          target: "/root/apnet/andreiabiscuit/frontend"
+          strip_components: 1
+
+      - name: Migrar PM2 para server.cjs se necessário
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            if pm2 info frontend_andreia 2>/dev/null | grep -q 'server.cjs'; then
+              pm2 restart frontend_andreia
+            else
+              pm2 stop frontend_andreia 2>/dev/null || true
+              pm2 delete frontend_andreia 2>/dev/null || true
+              pm2 start /root/apnet/andreiabiscuit/frontend/server.cjs --name frontend_andreia
+              pm2 save
+            fi
+
       - name: Gerar bundle OTA
         run: |
           BUNDLE_ID=$(echo $GITHUB_SHA | cut -c1-8)
